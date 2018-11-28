@@ -77,6 +77,30 @@
   version = "v0.17.2"
 
 [[projects]]
+  name = "github.com/gobuffalo/envy"
+  packages = ["."]
+  revision = "b29bf6b8134f3398b9333ba1893c58620152edb0"
+  version = "v1.6.9"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/gobuffalo/packd"
+  packages = ["."]
+  revision = "311c6248e5fbdcd13b3ce364f00073506d8154e6"
+
+[[projects]]
+  name = "github.com/gobuffalo/packr"
+  packages = ["."]
+  revision = "ba3c3ae9169fdc7b283f00a4b4c39346e444871c"
+  version = "v1.21.5"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/gobuffalo/syncx"
+  packages = ["."]
+  revision = "558ac7de985fc4f4057bff27c7bdf99e92fe0750"
+
+[[projects]]
   name = "github.com/gogo/protobuf"
   packages = [
     "proto",
@@ -162,6 +186,22 @@
   version = "v0.3.6"
 
 [[projects]]
+  branch = "first"
+  name = "github.com/integr8ly/operator-sdk-openshift-utils"
+  packages = [
+    "pkg/api/kubernetes",
+    "pkg/api/schemes",
+    "pkg/api/template"
+  ]
+  revision = "f89f09dbe5c34e0cedbe9a8d5f20eeef2c5c8171"
+
+[[projects]]
+  name = "github.com/joho/godotenv"
+  packages = ["."]
+  revision = "23d116af351c84513e1946b527c88823e476be13"
+  version = "v1.3.0"
+
+[[projects]]
   name = "github.com/json-iterator/go"
   packages = ["."]
   revision = "1624edc4454b8682399def8740d46db5e4362ba4"
@@ -176,6 +216,12 @@
     "jwriter"
   ]
   revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/markbates/oncer"
+  packages = ["."]
+  revision = "05fccaae8fc423476d98fd4c3e4699ba0fbbde48"
 
 [[projects]]
   branch = "master"
@@ -194,6 +240,22 @@
   packages = ["."]
   revision = "4b7aa43c6742a2c18fdef89dd197aaae7dac7ccd"
   version = "1.0.1"
+
+[[projects]]
+  branch = "release-3.11"
+  name = "github.com/openshift/api"
+  packages = [
+    "apps/v1",
+    "authorization/v1",
+    "build/v1",
+    "image/docker10",
+    "image/dockerpre012",
+    "image/v1",
+    "pkg/serialization",
+    "route/v1",
+    "template/v1"
+  ]
+  revision = "5ad8479f64f1b60ee9c62ce8ef1fe6638838725e"
 
 [[projects]]
   name = "github.com/operator-framework/operator-sdk"
@@ -221,6 +283,12 @@
   packages = ["."]
   revision = "5f041e8faa004a95c88a202771f4cc3e991971e6"
   version = "v2.0.1"
+
+[[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -257,7 +325,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "e657309f52e71501f9934566ac06dc5c2f7f11a1"
+  revision = "eb0de9b17e854e9b1ccd9963efafc79862359959"
 
 [[projects]]
   branch = "master"
@@ -291,7 +359,7 @@
     "unix",
     "windows"
   ]
-  revision = "62eef0e2fa9b2c385f7b2778e763486da6880d37"
+  revision = "4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -330,7 +398,7 @@
     "internal/fastwalk",
     "internal/gopathwalk"
   ]
-  revision = "04b5d21e00f1f47bd824a6ade581e7189bacde87"
+  revision = "e782529d0ddd4bb872a63766185bebe89c96d1ae"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -511,7 +579,8 @@
     "util/homedir",
     "util/integer",
     "util/jsonpath",
-    "util/retry"
+    "util/retry",
+    "util/workqueue"
   ]
   revision = "1f13a808da65775f22cbf47862c4e5898d8f4ca1"
 
@@ -587,14 +656,23 @@
     "pkg/client",
     "pkg/client/apiutil",
     "pkg/client/config",
+    "pkg/controller",
+    "pkg/event",
+    "pkg/handler",
+    "pkg/internal/controller",
     "pkg/internal/recorder",
     "pkg/leaderelection",
     "pkg/manager",
     "pkg/patch",
+    "pkg/predicate",
+    "pkg/reconcile",
     "pkg/recorder",
     "pkg/runtime/inject",
     "pkg/runtime/log",
+    "pkg/runtime/scheme",
     "pkg/runtime/signals",
+    "pkg/source",
+    "pkg/source/internal",
     "pkg/webhook/admission",
     "pkg/webhook/admission/types",
     "pkg/webhook/types"
@@ -605,6 +683,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0204ae9e12404bf2c2888339b58627ffe215ac880503768dec8e137c2125345b"
+  inputs-digest = "81f0427d0a74045e8f876384050a9b670b851549f3a4d31023b1f3bfd3ede1e6"
   solver-name = "gps-cdcl"
   solver-version = 1

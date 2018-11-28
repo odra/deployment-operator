@@ -1,0 +1,13 @@
+apiVersion: integreatly.org/v1alpha1
+kind: TDeployment
+metadata:
+  name: example-deployment
+spec:
+  template:
+    path: tutorial-web-app.yml
+    parameters:
+      IMAGE: "quay.io/integreatly/tutorial-web-app"
+      IMAGE_TAG: "latest"
+      OAUTH_CLIENT_ID: "tutorial-web-app"
+      OPENSHIFT_HOST: ""
+      SSO_ROUTE: ""

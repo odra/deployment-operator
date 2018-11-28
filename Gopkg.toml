@@ -52,3 +52,11 @@ required = [
   [[prune.project]]
     name = "k8s.io/code-generator"
     non-go = false
+
+[[constraint]]
+  name = "github.com/integr8ly/operator-sdk-openshift-utils"
+  branch = "first"
+
+[[constraint]]
+  name = "github.com/gobuffalo/packr"
+  version = "1.19.0"
