@@ -22,6 +22,7 @@ import (
 	"github.com/openshift/api/apps/v1"
 	"k8s.io/apimachinery/pkg/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	v12 "github.com/openshift/api/route/v1"
 )
 
 /**
@@ -142,7 +143,7 @@ func (r *ReconcileDeployment) Reconcile(request reconcile.Request) (reconcile.Re
 	}
 
 	if instance.Status.Phase == integreatlyv1alpha1.ProvisionPhase {
-		isProvisioned, err := r.IsProvisioningFinished(instance)
+		isProvisioned, err := r.IsProvisioningReady(instance)
 		if err != nil {
 			return reconcile.Result{}, err
 		}
@@ -156,7 +157,29 @@ func (r *ReconcileDeployment) Reconcile(request reconcile.Request) (reconcile.Re
 		}
 	}
 
-	return reconcile.Result{}, nil
+	if instance.Status.Phase == integreatlyv1alpha1.ReadyPhase {
+		isProvisioned, err := r.IsProvisioningReady(instance)
+		if err != nil  && !errors.IsNotFound(err) {
+			return reconcile.Result{}, err
+		}
+
+		if !isProvisioned {
+			err = r.DeployTemplate(instance)
+			if err != nil {
+				log.Printf("%v", err)
+				return reconcile.Result{}, err
+			}
+			instance.Status.Phase = integreatlyv1alpha1.ProvisionPhase
+			err = r.client.Update(context.TODO(), instance)
+			if err != nil {
+				return reconcile.Result{}, err
+			}
+		}
+	}
+
+	return reconcile.Result{
+		Requeue: true,
+	}, nil
 }
 
 func (r *ReconcileDeployment) Bootstrap(cr *integreatlyv1alpha1.TDeployment) error {
@@ -204,7 +227,7 @@ func (r *ReconcileDeployment) DeployTemplate(cr *integreatlyv1alpha1.TDeployment
 	return nil
 }
 
-func (r *ReconcileDeployment) IsProvisioningFinished(cr *integreatlyv1alpha1.TDeployment) (bool, error) {
+func (r *ReconcileDeployment) IsDeploymentReady(cr *integreatlyv1alpha1.TDeployment) (bool, error) {
 	deploymentName := "tutorial-web-app"
 	dc := &v1.DeploymentConfig{
 		TypeMeta: metav1.TypeMeta{
@@ -212,8 +235,8 @@ func (r *ReconcileDeployment) IsProvisioningFinished(cr *integreatlyv1alpha1.TDe
 			APIVersion: "apps.openshift.io/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: deploymentName,
 			Namespace: cr.Namespace,
+			Name: deploymentName,
 		},
 	}
 	key := types.NamespacedName{
@@ -226,9 +249,89 @@ func (r *ReconcileDeployment) IsProvisioningFinished(cr *integreatlyv1alpha1.TDe
 		return false, err
 	}
 
-	if dc.Status.ReadyReplicas == dc.Status.Replicas {
+	log.Printf("|||%+v|||", dc)
+
+	if dc.Status.AvailableReplicas == dc.Status.Replicas {
 		return true, nil
 	}
 
 	return false, nil
+}
+
+func (r *ReconcileDeployment) IsServiceReady(cr *integreatlyv1alpha1.TDeployment) (bool, error) {
+	service := &corev1.Service{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "Service",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: cr.Namespace,
+			Name: "tutorial-web-app",
+		},
+	}
+	key := types.NamespacedName{
+		Namespace: cr.Namespace,
+		Name: "tutorial-web-app",
+	}
+
+	err := r.client.Get(context.TODO(), key, service)
+	if err != nil{
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (r *ReconcileDeployment) IsRouteReady(cr *integreatlyv1alpha1.TDeployment) (bool, error) {
+	route := &v12.Route{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "Route",
+			APIVersion: "route.openshift.io/v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: cr.Namespace,
+			Name: "tutorial-web-app",
+		},
+	}
+	key := types.NamespacedName{
+		Namespace: cr.Namespace,
+		Name: "tutorial-web-app",
+	}
+
+	err := r.client.Get(context.TODO(), key, route)
+	if err != nil{
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (r *ReconcileDeployment) IsProvisioningReady(cr *integreatlyv1alpha1.TDeployment) (bool, error) {
+	var err error
+	var ok bool
+
+	ok, err = r.IsDeploymentReady(cr)
+	if err != nil {
+		return ok, err
+	}
+
+	ok, err = r.IsServiceReady(cr)
+	if err != nil {
+		return ok, err
+	}
+
+	ok, err = r.IsRouteReady(cr)
+	if err != nil {
+		return ok, err
+	}
+
+	return true, nil
 }
